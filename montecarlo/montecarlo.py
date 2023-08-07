@@ -22,6 +22,7 @@ class Die:
         
         self.sides = sides
         self.__diedf = pd.DataFrame({'sides':sides, 'weights':[1]*len(sides)})
+        self.__diedf = self.__diedf.set_index('sides')
     
     def change_weight(self, side, weight):
         '''
@@ -38,8 +39,7 @@ class Die:
                 if not weight.isnumeric():
                     raise TypeError
                 
-        index = self.__diedf.index[self.__diedf['sides']==side].to_list()[0]
-        self.__diedf['weights'][index] = float(weight)
+        self.__diedf['weights'][side] = float(weight)
     
     def roll(self, n=1):
         '''
@@ -50,7 +50,7 @@ class Die:
         OUTPUTS:
         list of die outcomes
         '''
-        return self.__diedf.sample(n, replace=True, weights=self.__diedf['weights'])['sides'].to_list()
+        return self.__diedf.sample(n, replace=True, weights=self.__diedf['weights']).index.to_list()
     
     def state(self):
         '''
@@ -65,4 +65,25 @@ class Die:
 class Game:
     
     def __init__(self, dice):
-        
+        self.dice = dice
+        self.__playdf = pd.DataFrame()
+    
+    def play(self, n):
+        '''
+        A play method.
+
+        Takes an integer parameter to specify how many times the dice should be rolled.
+
+        Saves the result of the play to a private data frame.
+
+        The data frame should be in wide format, i.e. have the roll number as a named index, columns for each die number (using its list index as the column name), and the face rolled in that instance in each cell.
+        '''
+        roll_outcomes = {}
+        for i in range(len(self.dice)):
+            roll_outcomes[i] = self.dice[i].roll(n)
+        self.__playdf = pd.DataFrame(roll_outcomes)
+    
+    def last_play(self, narrow=False):
+        if(narrow):
+            return 
+        return self.__playdf.copy()
