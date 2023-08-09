@@ -3,9 +3,10 @@ import pandas as pd
 
 class Die:
     '''
-    A die has sides and weights, and can be rolled to select a face. Each side contains a unique symbol. 
-    Symbols may be all alphabetic or all numeric. The weights are just numbers, not a normalized probability 
-    distribution. The die has one behavior, which is to be rolled one or more times.
+    A die has sides and weights, and can be rolled to select a face. Each side contains a unique 
+    symbol. Symbols may be all alphabetic or all numeric. The weights are just numbers, not a 
+    normalized probability distribution. The die has one behavior, which is to be rolled one 
+    or more times.
     '''
     def __init__(self, sides):
         '''
@@ -54,29 +55,29 @@ class Die:
     
     def state(self):
         '''
-        Returns the state of the private data frame. The returned value is a deep copy of the data frame.
+        Returns the state of the private data frame. The returned value is a deep copy of the 
+        data frame.
         
         OUTPUTS:
-        private data frame
+        copy of the private die data frame
         '''
         return self.__diedf.copy()
     
     
 class Game:
-    
+    '''
+    '''
     def __init__(self, dice):
         self.dice = dice
         self.__playdf = pd.DataFrame()
     
     def play(self, n):
         '''
-        A play method.
+        Takes an integer parameter to specify how many times the dice should be rolled and
+        saves the result of the play to a private data frame.
 
-        Takes an integer parameter to specify how many times the dice should be rolled.
-
-        Saves the result of the play to a private data frame.
-
-        The data frame should be in wide format, i.e. have the roll number as a named index, columns for each die number (using its list index as the column name), and the face rolled in that instance in each cell.
+        INPUTS:
+        n - int number of times to roll dice
         '''
         roll_outcomes = {}
         for i in range(len(self.dice)):
@@ -84,6 +85,50 @@ class Game:
         self.__playdf = pd.DataFrame(roll_outcomes)
     
     def last_play(self, narrow=False):
+        '''
+        Returns a copy of the private play data frame to the user in narrow or wide form. 
+
+        INPUTS:
+        narrow - bool determines narrow or wide form for return data frame default=False
+        OUTPUTS:
+        copy of the private play data frame
+        '''
+        if not isinstance(narrow, bool):
+            raise ValueError
+        
+        df = self.__playdf.copy()
+        df['roll'] = df.index
         if(narrow):
-            return 
-        return self.__playdf.copy()
+            df = pd.melt(df, id_vars = ['roll'], 
+                    value_vars = [i for i in range(len(df.columns)-1)])
+            df = df.rename({'variable': 'dice', 'value':'outcome'}, axis=1)
+            df = df.set_index(['roll', 'dice'])
+            return df
+        df = df.set_index('roll')
+        c = {}
+        for i in df.columns:
+            c[i]= 'dice-'+str(i)
+        df = df.rename(c, axis=1)
+        return df
+
+class Analyzer:
+    def __init__(self, game):
+        if not isinstance(game, Game):
+            raise ValueError
+        self.game = game
+    
+    def jackpot(self):
+        df = self.game.last_play()
+        count = 0
+        for c in df.columns:
+            if len(df[c].unique())==1:
+                count+=1
+        return count
+    
+    def combo(self):
+        df = self.game.last_play()
+        combo = pd.DataFrame(np.sort(df.values, axis=1)).groupby([i for i in range(len(df.columns))]).value_counts()
+        return pd.DataFrame(combo)
+    
+    def permutations(self):
+        return pd.DataFrame(self.game.last_play().value_counts())
