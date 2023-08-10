@@ -10,7 +10,7 @@ class Die:
     '''
     def __init__(self, sides):
         '''
-        Initializes the Die Class.
+        Instantiates a Die object.
         
         INPUTS:
         sides - np.array of unique alphabetic or numeric sides
@@ -72,6 +72,12 @@ class Game:
     Game objects only keep the results of their most recent play.
     '''
     def __init__(self, dice):
+        '''
+        Instantiates a Game object.
+
+        INPUTS:
+        dice - list of die objects
+        '''
         self.dice = dice
         self.__playdf = pd.DataFrame()
     
@@ -121,25 +127,74 @@ class Analyzer:
     statistical properties about it.
     '''
     def __init__(self, game):
+        '''
+        Instantiates an Analyzer object.
+
+        INPUTS:
+        game - a game object
+        '''
         if not isinstance(game, Game):
             raise ValueError
         self.game = game
     
-    def face_counts(self):
-        return
-    
     def jackpot(self):
+        '''
+        Computes how many times the game resulted in a jackpot rolls. Jackpot
+        rolls are outcomes in which all faces are the same for all dice.
+
+        OUTPUTS:
+        int count of jackpot occurances
+        '''
         df = self.game.last_play()
         count = 0
-        for c in df.columns:
-            if len(df[c].unique())==1:
+        for i in df.index:
+            if len(df.iloc[i].unique())==1:
                 count+=1
         return count
+
+    def face_counts(self):
+        '''
+        Computes how many times a given face is rolled in each event and returns
+        a data frame of results.
+
+        OUTPUTS:
+        data frame an index of the roll number, face values as columns, and 
+        count values in the cells (wide format)
+        '''
+        sides = list(self.game.dice[0].sides)
+        df = self.game.last_play(False)
+        fc = {k:[] for k in sides}
+        
+        for i in range(len(df)):
+            unique, counts = np.unique(df.iloc[i], return_counts=True)
+            for j in range(len(sides)):
+                if sides[j] in list(unique):
+                    index = list(unique).index(sides[j])
+                    fc[sides[j]].append(counts[index])
+                else:
+                    fc[sides[j]].append(0)
+        return pd.DataFrame(fc)
     
     def combos(self):
+        '''
+        Computes the distinct combinations of faces rolled, along with their 
+        counts. Combinations are order-independent and may contain repetitions.
+
+        OUTPUTS:
+        data frame with MultiIndex of distinct combinations and a column for 
+        the associated counts
+        '''
         df = self.game.last_play()
         combo = pd.DataFrame(np.sort(df.values, axis=1)).groupby([i for i in range(len(df.columns))]).value_counts()
         return pd.DataFrame(combo)
     
     def permutations(self):
+        '''
+        Computes the distinct permutations of faces rolled, along with their 
+        counts.
+
+        OUTPUTS:
+        data frame with MultiIndex of distinct permutations and a column for 
+        the associated counts.
+        '''
         return pd.DataFrame(self.game.last_play().value_counts())
