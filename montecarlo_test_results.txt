@@ -1,0 +1,17 @@
+test_analyzer_combos (__main__.MontecarloTestSuite) ... ok
+test_analyzer_face_counts (__main__.MontecarloTestSuite) ... ok
+test_analyzer_init (__main__.MontecarloTestSuite) ... ok
+test_analyzer_jackpot (__main__.MontecarloTestSuite) ... ok
+test_analyzer_permutations (__main__.MontecarloTestSuite) ... ok
+test_die_change_weight (__main__.MontecarloTestSuite) ... ok
+test_die_init (__main__.MontecarloTestSuite) ... ok
+test_die_roll (__main__.MontecarloTestSuite) ... ok
+test_die_state (__main__.MontecarloTestSuite) ... ok
+test_game_init (__main__.MontecarloTestSuite) ... ok
+test_game_last_play (__main__.MontecarloTestSuite) ... ok
+test_game_play (__main__.MontecarloTestSuite) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.021s
+
+OK
