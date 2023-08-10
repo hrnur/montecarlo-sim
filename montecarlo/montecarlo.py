@@ -63,9 +63,13 @@ class Die:
         '''
         return self.__diedf.copy()
     
-    
+
 class Game:
     '''
+    A game consists of rolling of one or more similar dice (Die objects) one or more times.
+    Each game is initialized with a Python list that contains one or more dice. Game objects 
+    have a behavior to play a game, i.e. to roll all of the dice a given number of times. 
+    Game objects only keep the results of their most recent play.
     '''
     def __init__(self, dice):
         self.dice = dice
@@ -112,10 +116,17 @@ class Game:
         return df
 
 class Analyzer:
+    '''
+    An Analyzer takes the results of a single game and computes various descriptive 
+    statistical properties about it.
+    '''
     def __init__(self, game):
         if not isinstance(game, Game):
             raise ValueError
         self.game = game
+    
+    def face_counts(self):
+        return
     
     def jackpot(self):
         df = self.game.last_play()
@@ -125,7 +136,7 @@ class Analyzer:
                 count+=1
         return count
     
-    def combo(self):
+    def combos(self):
         df = self.game.last_play()
         combo = pd.DataFrame(np.sort(df.values, axis=1)).groupby([i for i in range(len(df.columns))]).value_counts()
         return pd.DataFrame(combo)
