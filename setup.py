@@ -4,7 +4,7 @@ setup(
     name='montecarlo', 
     author='Hana Nur', 
     version='1.0', 
-    url='https://github.com/hrnur/hrn4ch_ds5100_montecarlo',
+    url='https://github.com/hrnur/montecarlo-sim',
     author_email = 'hrn4ch@virginia.edu', 
     description='Creates Monte Carlo simulator.', 
     license='MIT',
