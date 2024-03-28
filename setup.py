@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='montecarlo', 
+    name='montecarlo_sim', 
     author='Hana Nur', 
     version='1.0', 
-    url='https://github.com/hrnur/montecarlo-sim',
+    url='https://github.com/hrnur/montecarlo_sim',
     author_email = 'hrn4ch@virginia.edu', 
     description='Creates Monte Carlo simulator.', 
     license='MIT',
